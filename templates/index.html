@@ -46,57 +46,91 @@
 
         .content {
             padding: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .top-controls {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 12px;
+            align-items: start;
+        }
+
+        .main-layout {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 20px;
         }
 
         .control-panel {
             background: #f8f9fa;
-            padding: 20px;
+            padding: 15px;
             border-radius: 10px;
-            margin-bottom: 20px;
+            height: fit-content;
+            position: sticky;
+            top: 20px;
         }
 
         .control-group {
             display: flex;
-            gap: 20px;
-            align-items: center;
-            flex-wrap: wrap;
+            flex-direction: column;
+            gap: 15px;
         }
 
         .control-item {
             display: flex;
-            align-items: center;
-            gap: 10px;
+            flex-direction: column;
+            gap: 8px;
         }
 
         .control-item label {
             font-weight: 600;
             color: #333;
+            font-size: 14px;
+        }
+
+        .control-item-row {
+            display: flex;
+            gap: 10px;
+            align-items: center;
         }
 
         .control-item select,
-        .control-item input[type="text"] {
-            padding: 8px 15px;
+        .control-item input[type="text"],
+        .control-item-row select,
+        .control-item-row input[type="text"] {
+            padding: 8px 12px;
             border: 2px solid #ddd;
             border-radius: 5px;
-            font-size: 16px;
+            font-size: 14px;
             transition: border-color 0.3s;
+            width: 100%;
         }
 
-        .control-item select {
+        .control-item select,
+        .control-item-row select {
             cursor: pointer;
         }
 
         .control-item select:hover,
-        .control-item input[type="text"]:focus {
+        .control-item input[type="text"]:focus,
+        .control-item-row select:hover,
+        .control-item-row input[type="text"]:focus {
             border-color: #667eea;
         }
 
-        .control-item input[type="text"] {
-            min-width: 150px;
+        .control-item input[type="text"],
+        .control-item-row input[type="text"] {
             font-family: 'Consolas', 'Monaco', monospace;
         }
 
-        .control-item input[type="text"]:focus {
+        .control-item input[type="text"]:focus,
+        .control-item-row input[type="text"]:focus {
             outline: none;
         }
 
@@ -194,11 +228,27 @@
             box-shadow: 0 5px 15px rgba(255, 193, 7, 0.4);
         }
 
+        .btn-trim {
+            background: #17a2b8;
+            color: white;
+        }
+
+        .btn-trim:hover {
+            background: #138496;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(23, 162, 184, 0.4);
+        }
+
+        .right-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
         .editor-container {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 20px;
-            margin-top: 20px;
         }
 
         .editor-panel {
@@ -280,14 +330,107 @@
             margin: 5px 0;
         }
 
-        @media (max-width: 768px) {
-            .editor-container {
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+
+        .action-buttons .btn {
+            flex: 1;
+            min-width: 100px;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 5px;
+            border-bottom: 2px solid #ddd;
+            margin-bottom: 15px;
+        }
+
+        .tab {
+            padding: 10px 20px;
+            background: #e9ecef;
+            border: none;
+            border-radius: 5px 5px 0 0;
+            cursor: pointer;
+            font-weight: 600;
+            color: #666;
+            transition: all 0.3s;
+        }
+
+        .tab:hover {
+            background: #dee2e6;
+        }
+
+        .tab.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .collapsible-section {
+            margin-bottom: 10px;
+        }
+
+        .collapsible-header {
+            background: #667eea;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+            transition: background 0.3s;
+            user-select: none;
+        }
+
+        .collapsible-header:hover {
+            background: #5568d3;
+        }
+
+        .collapsible-header .arrow {
+            transition: transform 0.3s;
+            font-size: 12px;
+        }
+
+        .collapsible-header.collapsed .arrow {
+            transform: rotate(-90deg);
+        }
+
+        .collapsible-content {
+            max-height: 1000px;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out, padding 0.3s ease-out;
+            padding: 15px 10px;
+        }
+
+        .collapsible-content.collapsed {
+            max-height: 0;
+            padding: 0 10px;
+        }
+
+        @media (max-width: 1200px) {
+            .content {
                 grid-template-columns: 1fr;
             }
 
-            .control-group {
-                flex-direction: column;
-                align-items: stretch;
+            .control-panel {
+                position: static;
+            }
+
+            .editor-container {
+                grid-template-columns: 1fr;
             }
 
             .header h1 {
@@ -304,70 +447,332 @@
         </div>
 
         <div class="content">
-            <div class="control-panel">
+            <!-- 상단 컨트롤 영역 -->
+            <div class="top-controls">
+                <!-- 액션 버튼 영역 -->
+                <div style="display: flex; gap: 10px; grid-column: 1 / -1;">
+                    <label for="fileInput" class="btn btn-upload" style="flex: 1; margin: 0; text-align: center;">📁 파일 열기</label>
+                    <input type="file" id="fileInput" accept=".md,.markdown,.txt" style="display: none;" onchange="loadFile(this)">
+                    <button class="btn btn-convert" onclick="convertText()" style="flex: 1;">🔄 변환</button>
+                    <button class="btn btn-download" onclick="downloadFile()" style="flex: 1;">⬇️ 다운로드</button>
+                    <button class="btn btn-clear" onclick="clearAll()" style="flex: 1;">🗑️ 초기화</button>
+                </div>
+
+                <div style="grid-column: 1 / -1;">
+                    <span id="fileName" style="color: #666; font-size: 12px; display: block;"></span>
+                </div>
+
+                <div class="collapsible-section" style="grid-column: 1 / -1;">
+                    <div class="collapsible-header" onclick="toggleCollapse(this)">
+                        <span>⚙️ 출력 설정</span>
+                        <span class="arrow">▼</span>
+                    </div>
+                    <div class="collapsible-content">
+                        <div style="display: flex; flex-direction: column; gap: 10px;">
+                            <div style="display: flex; gap: 15px; align-items: center;">
+                                <label for="outputLevel" style="min-width: 100px; font-weight: 600;">출력 시작 레벨:</label>
+                                <select id="outputLevel" style="flex: 1;">
+                                    <option value="1"># (레벨 1)</option>
+                                    <option value="2">## (레벨 2)</option>
+                                    <option value="3" selected>### (레벨 3)</option>
+                                    <option value="4">#### (레벨 4)</option>
+                                    <option value="5">##### (레벨 5)</option>
+                                    <option value="6">###### (레벨 6)</option>
+                                </select>
+                                <label for="suffix" style="min-width: 90px; font-weight: 600;">마크 뒤 추가:</label>
+                                <input type="text" id="suffix" placeholder="예: ▶, >>" title="마크다운 # 뒤에 추가할 공백이나 심볼" style="flex: 1; padding: 8px 12px; border: 2px solid #ddd; border-radius: 5px;">
+                            </div>
+
+                            <div style="display: flex; gap: 15px; align-items: center;">
+                                <label style="min-width: 100px; font-weight: 600;">제외 레벨:</label>
+                                <div class="exclude-levels" style="flex: 1;">
+                                    <label title="레벨 1 제외">
+                                        <input type="checkbox" id="excludeLevel1" value="level1">
+                                        <span>#</span>
+                                    </label>
+                                    <label title="레벨 2 제외">
+                                        <input type="checkbox" id="excludeLevel2" value="level2">
+                                        <span>##</span>
+                                    </label>
+                                    <label title="레벨 3 제외">
+                                        <input type="checkbox" id="excludeLevel3" value="level3">
+                                        <span>###</span>
+                                    </label>
+                                    <label title="레벨 4 제외">
+                                        <input type="checkbox" id="excludeLevel4" value="level4">
+                                        <span>####</span>
+                                    </label>
+                                    <label title="레벨 5 제외">
+                                        <input type="checkbox" id="excludeLevel5" value="level5">
+                                        <span>#####</span>
+                                    </label>
+                                    <label title="레벨 6 제외">
+                                        <input type="checkbox" id="excludeLevel6" value="level6">
+                                        <span>######</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 메인 레이아웃 (왼쪽 패널 + 오른쪽 에디터) -->
+            <div class="main-layout">
+                <div class="control-panel">
+                <div class="tabs">
+                    <button class="tab active" onclick="switchTab('pattern')">패턴 설정</button>
+                    <button class="tab" onclick="switchTab('guide')">정규식 가이드</button>
+                </div>
+
+                <div id="pattern-tab" class="tab-content active">
                 <div class="control-group">
-                    <div class="control-item">
-                        <label for="fileInput" class="btn btn-upload">📁 파일 열기</label>
-                        <input type="file" id="fileInput" accept=".md,.markdown,.txt" style="display: none;" onchange="loadFile(this)">
-                        <span id="fileName" style="color: #666; font-size: 14px;"></span>
-                    </div>
+
+                    <div class="collapsible-section">
+                        <div class="collapsible-header" onclick="toggleCollapse(this)">
+                            <span>🎯 패턴 설정</span>
+                            <span class="arrow">▼</span>
+                        </div>
+                        <div class="collapsible-content">
+                        <div style="display: flex; flex-direction: column; gap: 12px;">
 
                     <div class="control-item">
-                        <label for="startLevel">시작 레벨:</label>
-                        <select id="startLevel">
-                            <option value="1"># (레벨 1)</option>
-                            <option value="2">## (레벨 2)</option>
-                            <option value="3" selected>### (레벨 3)</option>
-                            <option value="4">#### (레벨 4)</option>
-                            <option value="5">##### (레벨 5)</option>
-                            <option value="6">###### (레벨 6)</option>
-                        </select>
-                    </div>
-
-                    <div class="control-item">
-                        <label for="suffix">마크 뒤 추가:</label>
-                        <input type="text" id="suffix" placeholder="예: ▶, >>, 공백 등" title="마크다운 # 뒤에 추가할 공백이나 심볼">
-                    </div>
-
-                    <div class="control-item">
-                        <label>제외 레벨:</label>
-                        <div class="exclude-levels">
-                            <label title="### 1. 제목 형식 제외">
-                                <input type="checkbox" id="excludeLevel1" value="level1">
-                                <span>###</span>
+                        <label for="level1Pattern">레벨 1 패턴:</label>
+                        <div class="control-item-row">
+                            <select id="level1Pattern" style="flex: 1;">
+                                <option value="">선택 안함</option>
+                                <option value="^###\s+" selected>### (3개 #)</option>
+                                <option value="^####\s+">#### (4개 #)</option>
+                                <option value="^##\s+">## (2개 #)</option>
+                                <option value="^#\s+"># (1개 #)</option>
+                                <option value="^\d+\.\s+">숫자. (1., 2.)</option>
+                                <option value="^[A-Z]\.\s+">대문자. (A., B.)</option>
+                                <option value="^[IVX]+\.\s+">로마숫자. (I., II.)</option>
+                                <option value="^[a-z]\)\s+">소문자) (a), b))</option>
+                                <option value="^\(\d+\)\s+">괄호숫자 ((1), (2))</option>
+                                <option value="custom">직접 입력</option>
+                            </select>
+                        </div>
+                        <input type="text" id="level1Custom" placeholder="정규식 입력" style="display:none;">
+                        <div style="display: flex; gap: 10px; margin-top: 5px; font-size: 13px;">
+                            <label style="display: flex; align-items: center; gap: 5px; cursor: pointer;">
+                                <input type="checkbox" id="level1Space1" onchange="updatePatternWithSpaces('level1')">
+                                <span>공백 1개 허용</span>
                             </label>
-                            <label title="1.1 소제목 형식 제외">
-                                <input type="checkbox" id="excludeLevel2" value="level2">
-                                <span>##</span>
-                            </label>
-                            <label title="- 항목 형식 제외">
-                                <input type="checkbox" id="excludeLevel3" value="level3">
-                                <span>#</span>
-                            </label>
-                            <label title="레벨 4 형식 제외">
-                                <input type="checkbox" id="excludeLevel4" value="level4">
-                                <span>####</span>
-                            </label>
-                            <label title="레벨 5 형식 제외">
-                                <input type="checkbox" id="excludeLevel5" value="level5">
-                                <span>#####</span>
-                            </label>
-                            <label title="레벨 6 형식 제외">
-                                <input type="checkbox" id="excludeLevel6" value="level6">
-                                <span>######</span>
+                            <label style="display: flex; align-items: center; gap: 5px; cursor: pointer;">
+                                <input type="checkbox" id="level1Space2" onchange="updatePatternWithSpaces('level1')">
+                                <span>공백 2개 허용</span>
                             </label>
                         </div>
                     </div>
 
-                    <button class="btn btn-convert" onclick="convertText()">🔄 변환하기</button>
-                    <button class="btn btn-download" onclick="downloadFile()">⬇️ 다운로드</button>
-                    <button class="btn btn-clear" onclick="clearAll()">🗑️ 초기화</button>
-                </div>
-            </div>
+                    <div class="control-item">
+                        <label for="level2Pattern">레벨 2 패턴:</label>
+                        <div class="control-item-row">
+                            <select id="level2Pattern" style="flex: 1;">
+                                <option value="">선택 안함</option>
+                                <option value="^\d+\.\d+\s+" selected>숫자.숫자 (1.1, 1.2)</option>
+                                <option value="^####\s+">#### (4개 #)</option>
+                                <option value="^###\s+">### (3개 #)</option>
+                                <option value="^##\s+">## (2개 #)</option>
+                                <option value="^#\s+"># (1개 #)</option>
+                                <option value="^\d+\)\s+">숫자) (1), 2))</option>
+                                <option value="^[a-z]\.\s+">소문자. (a., b.)</option>
+                                <option value="^[A-Z]\)\s+">대문자) (A), B))</option>
+                                <option value="^\(\d+\)\s+">괄호숫자 ((1), (2))</option>
+                                <option value="custom">직접 입력</option>
+                            </select>
+                        </div>
+                        <input type="text" id="level2Custom" placeholder="정규식 입력" style="display:none;">
+                        <div style="display: flex; gap: 10px; margin-top: 5px; font-size: 13px;">
+                            <label style="display: flex; align-items: center; gap: 5px; cursor: pointer;">
+                                <input type="checkbox" id="level2Space1" onchange="updatePatternWithSpaces('level2')">
+                                <span>공백 1개 허용</span>
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 5px; cursor: pointer;">
+                                <input type="checkbox" id="level2Space2" onchange="updatePatternWithSpaces('level2')">
+                                <span>공백 2개 허용</span>
+                            </label>
+                        </div>
+                    </div>
 
-            <div class="editor-container">
+                    <div class="control-item">
+                        <label for="level3Pattern">레벨 3 패턴:</label>
+                        <div class="control-item-row">
+                            <select id="level3Pattern" style="flex: 1;">
+                                <option value="">선택 안함</option>
+                                <option value="^\s*-\s+" selected>- (대시)</option>
+                                <option value="^\s*\*\s+">* (별표)</option>
+                                <option value="^\s*\+\s+">+ (플러스)</option>
+                                <option value="^####\s+">#### (4개 #)</option>
+                                <option value="^###\s+">### (3개 #)</option>
+                                <option value="^##\s+">## (2개 #)</option>
+                                <option value="^\d+\.\d+\.\d+\s+">숫자.숫자.숫자 (1.1.1)</option>
+                                <option value="^[a-z]\)\s+">소문자) (a), b))</option>
+                                <option value="custom">직접 입력</option>
+                            </select>
+                        </div>
+                        <input type="text" id="level3Custom" placeholder="정규식 입력" style="display:none;">
+                        <div style="display: flex; gap: 10px; margin-top: 5px; font-size: 13px;">
+                            <label style="display: flex; align-items: center; gap: 5px; cursor: pointer;">
+                                <input type="checkbox" id="level3Space1" onchange="updatePatternWithSpaces('level3')">
+                                <span>공백 1개 허용</span>
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 5px; cursor: pointer;">
+                                <input type="checkbox" id="level3Space2" onchange="updatePatternWithSpaces('level3')">
+                                <span>공백 2개 허용</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="control-item">
+                        <label for="level4Pattern">레벨 4 패턴:</label>
+                        <div class="control-item-row">
+                            <select id="level4Pattern" style="flex: 1;">
+                                <option value="" selected>선택 안함</option>
+                                <option value="^\s{4,}-\s+">들여쓰기 대시 (    -)</option>
+                                <option value="^\s{4,}\*\s+">들여쓰기 별표 (    *)</option>
+                                <option value="^####\s+">#### (4개 #)</option>
+                                <option value="^###\s+">### (3개 #)</option>
+                                <option value="^\d+\.\d+\.\d+\.\d+\s+">숫자4단계 (1.1.1.1)</option>
+                                <option value="^[가-힣]\.\s+">한글. (가., 나.)</option>
+                                <option value="custom">직접 입력</option>
+                            </select>
+                        </div>
+                        <input type="text" id="level4Custom" placeholder="정규식 입력" style="display:none;">
+                        <div style="display: flex; gap: 10px; margin-top: 5px; font-size: 13px;">
+                            <label style="display: flex; align-items: center; gap: 5px; cursor: pointer;">
+                                <input type="checkbox" id="level4Space1" onchange="updatePatternWithSpaces('level4')">
+                                <span>공백 1개 허용</span>
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 5px; cursor: pointer;">
+                                <input type="checkbox" id="level4Space2" onchange="updatePatternWithSpaces('level4')">
+                                <span>공백 2개 허용</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="control-item">
+                        <label for="level5Pattern">레벨 5 패턴:</label>
+                        <div class="control-item-row">
+                            <select id="level5Pattern" style="flex: 1;">
+                                <option value="" selected>선택 안함</option>
+                                <option value="^\s{8,}-\s+">들여쓰기2 대시 (        -)</option>
+                                <option value="^#####\s+">##### (5개 #)</option>
+                                <option value="^####\s+">#### (4개 #)</option>
+                                <option value="^○\s+">원 기호 (○)</option>
+                                <option value="^●\s+">채운 원 (●)</option>
+                                <option value="custom">직접 입력</option>
+                            </select>
+                        </div>
+                        <input type="text" id="level5Custom" placeholder="정규식 입력" style="display:none;">
+                        <div style="display: flex; gap: 10px; margin-top: 5px; font-size: 13px;">
+                            <label style="display: flex; align-items: center; gap: 5px; cursor: pointer;">
+                                <input type="checkbox" id="level5Space1" onchange="updatePatternWithSpaces('level5')">
+                                <span>공백 1개 허용</span>
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 5px; cursor: pointer;">
+                                <input type="checkbox" id="level5Space2" onchange="updatePatternWithSpaces('level5')">
+                                <span>공백 2개 허용</span>
+                            </label>
+                        </div>
+                    </div>
+
+                        </div>
+                        </div>
+                    </div>
+
+                    <div class="collapsible-section">
+                        <div class="collapsible-header" onclick="toggleCollapse(this)">
+                            <span>💾 프리셋</span>
+                            <span class="arrow">▼</span>
+                        </div>
+                        <div class="collapsible-content">
+
+                    <div class="control-item">
+                        <label>프리셋:</label>
+                        <div class="control-item-row">
+                            <select id="presetSelect" style="flex: 1;">
+                                <option value="">프리셋 선택...</option>
+                                <option value="default">기본 (###, 1.1, -)</option>
+                                <option value="numbered">숫자 체계 (1., 1.1, 1.1.1)</option>
+                                <option value="markdown">마크다운 (#, ##, ###)</option>
+                            </select>
+                            <button class="btn" onclick="loadPreset()" style="padding: 8px 12px; font-size: 14px;">불러오기</button>
+                        </div>
+                        <button class="btn" onclick="savePreset()" style="width: 100%; margin-top: 5px; padding: 8px 12px; font-size: 14px; background: #ffc107; color: #333;">현재 설정 저장</button>
+                    </div>
+
+                        </div>
+                    </div>
+                </div>
+                </div>
+
+                <div id="guide-tab" class="tab-content">
+                    <div style="background: #fff3cd; padding: 15px; border-radius: 8px; border-left: 4px solid #ffc107;">
+                        <h4 style="color: #856404; margin-bottom: 10px;">💡 정규식(Regex) 기본 기호</h4>
+                        <ul style="color: #856404; margin-left: 20px;">
+                            <li><code>^</code> - 줄의 시작</li>
+                            <li><code>\s</code> - 공백 문자 (스페이스, 탭)</li>
+                            <li><code>\s+</code> - 하나 이상의 공백</li>
+                            <li><code>\s*</code> - 0개 이상의 공백</li>
+                            <li><code>\d</code> - 숫자 (0-9)</li>
+                            <li><code>\d+</code> - 하나 이상의 숫자</li>
+                            <li><code>\.</code> - 실제 마침표 (이스케이프)</li>
+                            <li><code>[A-Z]</code> - 대문자 알파벳</li>
+                            <li><code>[a-z]</code> - 소문자 알파벳</li>
+                            <li><code>[가-힣]</code> - 한글</li>
+                            <li><code>\(</code>, <code>\)</code> - 괄호 (이스케이프)</li>
+                        </ul>
+                    </div>
+
+                    <div style="background: #e7f3ff; padding: 15px; border-radius: 8px; margin-top: 15px; border-left: 4px solid #667eea;">
+                        <h4 style="color: #004085; margin-bottom: 10px;">📝 패턴 예제</h4>
+                        <table style="width: 100%; color: #004085; font-size: 13px;">
+                            <tr style="border-bottom: 1px solid #b8daff;">
+                                <td style="padding: 8px; font-weight: 600;">정규식</td>
+                                <td style="padding: 8px; font-weight: 600;">매칭 예제</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #b8daff;">
+                                <td style="padding: 8px;"><code>^###\s+</code></td>
+                                <td style="padding: 8px;"><code>### 제목</code></td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #b8daff;">
+                                <td style="padding: 8px;"><code>^\d+\.\s+</code></td>
+                                <td style="padding: 8px;"><code>1. 항목</code>, <code>2. 항목</code></td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #b8daff;">
+                                <td style="padding: 8px;"><code>^\d+\.\d+\s+</code></td>
+                                <td style="padding: 8px;"><code>1.1 소항목</code></td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #b8daff;">
+                                <td style="padding: 8px;"><code>^\s*-\s+</code></td>
+                                <td style="padding: 8px;"><code>- 항목</code>, <code>    - 항목</code></td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #b8daff;">
+                                <td style="padding: 8px;"><code>^[A-Z]\.\s+</code></td>
+                                <td style="padding: 8px;"><code>A. 항목</code>, <code>B. 항목</code></td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #b8daff;">
+                                <td style="padding: 8px;"><code>^\(\d+\)\s+</code></td>
+                                <td style="padding: 8px;"><code>(1) 항목</code>, <code>(2) 항목</code></td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 8px;"><code>^[가-힣]\.\s+</code></td>
+                                <td style="padding: 8px;"><code>가. 항목</code>, <code>나. 항목</code></td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                </div>
+
+                <div class="right-panel">
+                    <div class="editor-container">
                 <div class="editor-panel">
-                    <h3>입력 (원본)</h3>
+                    <h3>
+                        <span>입력 (원본)</span>
+                        <button class="btn btn-trim" onclick="trimLeadingSpaces()" style="padding: 8px 15px; font-size: 14px;">✂️ 공백 제거</button>
+                    </h3>
                     <textarea id="inputText" placeholder="변환할 마크다운 텍스트를 입력하세요...
 
 예시:
@@ -380,36 +785,144 @@
                 <div class="editor-panel">
                     <h3>
                         <span>출력 (변환 결과)</span>
-                        <button class="copy-icon" onclick="copyResult(event)" title="클립보드에 복사">
-                            📋 복사
-                        </button>
+                        <div style="display: flex; gap: 10px;">
+                            <button class="btn" onclick="filterOutput()" style="padding: 8px 15px; font-size: 14px; background: #17a2b8; color: white;">🔍 레벨 필터링</button>
+                            <button class="copy-icon" onclick="copyResult(event)" title="클립보드에 복사">
+                                📋 복사
+                            </button>
+                        </div>
                     </h3>
                     <textarea id="outputText" placeholder="변환 결과가 여기에 표시됩니다..." readonly></textarea>
                 </div>
-            </div>
-
-            <div class="info-box">
-                <h4>📌 사용 방법</h4>
-                <ul>
-                    <li><strong>파일 열기:</strong> .md, .markdown, .txt 파일을 선택하여 불러올 수 있습니다.</li>
-                    <li><strong>시작 레벨 선택:</strong> 변환할 마크다운의 첫 번째 헤딩 레벨을 선택하세요.</li>
-                    <li><strong>마크 뒤 추가:</strong> 마크다운 # 뒤에 추가할 공백이나 심볼을 입력하세요. (예: <code>▶</code>, <code>&gt;&gt;</code>, 추가 공백 등)</li>
-                    <li><strong>제외 레벨:</strong> 체크된 레벨은 변환하지 않고 원본 그대로 유지됩니다.</li>
-                    <li><strong>변환 규칙:</strong>
-                        <ul>
-                            <li><code>### 1. 제목</code> → 선택한 레벨로 변환 (번호 제거)</li>
-                            <li><code>1.1 소제목</code> → 선택한 레벨 +1로 변환 (번호 제거)</li>
-                            <li><code>- 항목</code> → 선택한 레벨 +2로 변환</li>
-                        </ul>
-                    </li>
-                    <li><strong>복사하기:</strong> 변환 결과를 클립보드에 복사할 수 있습니다.</li>
-                    <li><strong>다운로드:</strong> 변환된 결과를 .md 파일로 다운로드할 수 있습니다.</li>
-                </ul>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
+        // 공백 허용 옵션에 따라 패턴 업데이트
+        function updatePatternWithSpaces(level) {
+            const selectId = `${level}Pattern`;
+            const space1Id = `${level}Space1`;
+            const space2Id = `${level}Space2`;
+
+            const select = document.getElementById(selectId);
+            const space1 = document.getElementById(space1Id).checked;
+            const space2 = document.getElementById(space2Id).checked;
+
+            // custom 옵션이거나 선택 안함이면 아무것도 하지 않음
+            if (select.value === 'custom' || select.value === '') {
+                return;
+            }
+
+            // 원본 패턴 가져오기 (선택된 option의 value)
+            const selectedOption = select.options[select.selectedIndex];
+            let basePattern = selectedOption.value;
+
+            // 공백 옵션에 따라 패턴 수정
+            if (space1 && space2) {
+                // 공백 1개 또는 2개 허용: ^ 뒤에 \s{0,2} 추가
+                basePattern = basePattern.replace(/^\^/, '^\\s{0,2}');
+            } else if (space1) {
+                // 공백 1개만 허용: ^ 뒤에 \s? 추가
+                basePattern = basePattern.replace(/^\^/, '^\\s?');
+            } else if (space2) {
+                // 공백 2개만 허용: ^ 뒤에 \s{0,2} 추가
+                basePattern = basePattern.replace(/^\^/, '^\\s{0,2}');
+            }
+
+            // 업데이트된 패턴을 select의 value로 설정
+            // (실제로는 option value를 수정하지 않고, 변환 시 이 값을 사용)
+            select.setAttribute('data-modified-pattern', basePattern);
+        }
+
+        // 접기/펼치기 함수
+        function toggleCollapse(header) {
+            const content = header.nextElementSibling;
+            header.classList.toggle('collapsed');
+            content.classList.toggle('collapsed');
+        }
+
+        // 탭 전환 함수
+        function switchTab(tabName) {
+            // 모든 탭 버튼 비활성화
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // 모든 탭 컨텐츠 숨김
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+
+            // 선택된 탭 활성화
+            event.target.classList.add('active');
+            document.getElementById(tabName + '-tab').classList.add('active');
+        }
+
+        // 프리셋 정의
+        const presets = {
+            default: {
+                level1: '^###\\s+',
+                level2: '^\\d+\\.\\d+\\s+',
+                level3: '^\\s*-\\s+',
+                level4: '',
+                level5: '',
+                outputLevel: 3
+            },
+            numbered: {
+                level1: '^\\d+\\.\\s+',
+                level2: '^\\d+\\.\\d+\\s+',
+                level3: '^\\d+\\.\\d+\\.\\d+\\s+',
+                level4: '^\\d+\\.\\d+\\.\\d+\\.\\d+\\s+',
+                level5: '',
+                outputLevel: 1
+            },
+            markdown: {
+                level1: '^#\\s+',
+                level2: '^##\\s+',
+                level3: '^###\\s+',
+                level4: '^####\\s+',
+                level5: '^#####\\s+',
+                outputLevel: 1
+            }
+        };
+
+        // 패턴 선택 변경 시 커스텀 입력 필드 표시/숨김
+        function setupPatternSelects() {
+            ['level1Pattern', 'level2Pattern', 'level3Pattern', 'level4Pattern', 'level5Pattern'].forEach(id => {
+                const select = document.getElementById(id);
+                const customInput = document.getElementById(id.replace('Pattern', 'Custom'));
+
+                select.addEventListener('change', function() {
+                    if (this.value === 'custom') {
+                        customInput.style.display = 'block';
+                    } else {
+                        customInput.style.display = 'none';
+                    }
+                });
+            });
+        }
+
+        function trimLeadingSpaces() {
+            const inputText = document.getElementById('inputText');
+            const content = inputText.value;
+
+            if (!content.trim()) {
+                alert('공백을 제거할 내용이 없습니다.');
+                return;
+            }
+
+            // 각 라인의 앞부분 공백 제거
+            const lines = content.split('\n');
+            const trimmedLines = lines.map(line => line.trimStart());
+            const result = trimmedLines.join('\n');
+
+            inputText.value = result;
+            console.log('[공백 제거 완료] 각 라인의 앞부분 공백 제거됨');
+        }
+
         function loadFile(input) {
             const file = input.files[0];
             if (!file) return;
@@ -422,25 +935,127 @@
             reader.readAsText(file, 'UTF-8');
         }
 
+        function getPatternValue(selectId, customId) {
+            const select = document.getElementById(selectId);
+            if (select.value === 'custom') {
+                return document.getElementById(customId).value;
+            }
+            // 공백 옵션이 적용된 패턴이 있으면 그것을 사용
+            const modifiedPattern = select.getAttribute('data-modified-pattern');
+            if (modifiedPattern) {
+                return modifiedPattern;
+            }
+            return select.value;
+        }
+
+        function loadPreset() {
+            const presetName = document.getElementById('presetSelect').value;
+            if (!presetName) {
+                alert('프리셋을 선택해주세요.');
+                return;
+            }
+
+            // 기본 프리셋 또는 사용자 정의 프리셋
+            let preset = presets[presetName];
+
+            // 사용자 정의 프리셋인 경우 localStorage에서 불러오기
+            if (!preset && presetName.startsWith('custom_')) {
+                const savedPreset = localStorage.getItem(`preset_${presetName.substring(7)}`);
+                if (savedPreset) {
+                    preset = JSON.parse(savedPreset);
+                }
+            }
+
+            if (preset) {
+                document.getElementById('level1Pattern').value = preset.level1;
+                document.getElementById('level2Pattern').value = preset.level2;
+                document.getElementById('level3Pattern').value = preset.level3;
+                document.getElementById('level4Pattern').value = preset.level4;
+                document.getElementById('level5Pattern').value = preset.level5;
+                document.getElementById('outputLevel').value = preset.outputLevel;
+
+                // 공백 허용 설정 불러오기
+                if (preset.level1Space1 !== undefined) {
+                    document.getElementById('level1Space1').checked = preset.level1Space1 || false;
+                    document.getElementById('level1Space2').checked = preset.level1Space2 || false;
+                    document.getElementById('level2Space1').checked = preset.level2Space1 || false;
+                    document.getElementById('level2Space2').checked = preset.level2Space2 || false;
+                    document.getElementById('level3Space1').checked = preset.level3Space1 || false;
+                    document.getElementById('level3Space2').checked = preset.level3Space2 || false;
+                    document.getElementById('level4Space1').checked = preset.level4Space1 || false;
+                    document.getElementById('level4Space2').checked = preset.level4Space2 || false;
+                    document.getElementById('level5Space1').checked = preset.level5Space1 || false;
+                    document.getElementById('level5Space2').checked = preset.level5Space2 || false;
+
+                    // 공백 설정 적용 후 패턴 업데이트
+                    updatePatternWithSpaces('level1');
+                    updatePatternWithSpaces('level2');
+                    updatePatternWithSpaces('level3');
+                    updatePatternWithSpaces('level4');
+                    updatePatternWithSpaces('level5');
+                }
+
+                alert(`"${presetName}" 프리셋을 불러왔습니다.`);
+            }
+        }
+
+        function savePreset() {
+            const name = prompt('프리셋 이름을 입력하세요:');
+            if (!name) return;
+
+            const preset = {
+                level1: getPatternValue('level1Pattern', 'level1Custom'),
+                level2: getPatternValue('level2Pattern', 'level2Custom'),
+                level3: getPatternValue('level3Pattern', 'level3Custom'),
+                level4: getPatternValue('level4Pattern', 'level4Custom'),
+                level5: getPatternValue('level5Pattern', 'level5Custom'),
+                outputLevel: parseInt(document.getElementById('outputLevel').value),
+                // 공백 허용 설정 저장
+                level1Space1: document.getElementById('level1Space1').checked,
+                level1Space2: document.getElementById('level1Space2').checked,
+                level2Space1: document.getElementById('level2Space1').checked,
+                level2Space2: document.getElementById('level2Space2').checked,
+                level3Space1: document.getElementById('level3Space1').checked,
+                level3Space2: document.getElementById('level3Space2').checked,
+                level4Space1: document.getElementById('level4Space1').checked,
+                level4Space2: document.getElementById('level4Space2').checked,
+                level5Space1: document.getElementById('level5Space1').checked,
+                level5Space2: document.getElementById('level5Space2').checked
+            };
+
+            localStorage.setItem(`preset_${name}`, JSON.stringify(preset));
+
+            // 프리셋 목록에 추가
+            const select = document.getElementById('presetSelect');
+            const option = document.createElement('option');
+            option.value = `custom_${name}`;
+            option.textContent = `${name} (사용자 정의)`;
+            select.appendChild(option);
+
+            alert(`"${name}" 프리셋이 저장되었습니다.`);
+        }
+
         async function convertText() {
             const content = document.getElementById('inputText').value;
-            const startLevel = parseInt(document.getElementById('startLevel').value);
+            const outputLevel = parseInt(document.getElementById('outputLevel').value);
             const suffix = document.getElementById('suffix').value;
 
-            // 체크된 제외 레벨 수집
-            const excludeLevels = [];
-            if (document.getElementById('excludeLevel1').checked) excludeLevels.push('level1');
-            if (document.getElementById('excludeLevel2').checked) excludeLevels.push('level2');
-            if (document.getElementById('excludeLevel3').checked) excludeLevels.push('level3');
-            if (document.getElementById('excludeLevel4').checked) excludeLevels.push('level4');
-            if (document.getElementById('excludeLevel5').checked) excludeLevels.push('level5');
-            if (document.getElementById('excludeLevel6').checked) excludeLevels.push('level6');
+            // 패턴 수집
+            const level1Pattern = getPatternValue('level1Pattern', 'level1Custom');
+            const level2Pattern = getPatternValue('level2Pattern', 'level2Custom');
+            const level3Pattern = getPatternValue('level3Pattern', 'level3Custom');
+            const level4Pattern = getPatternValue('level4Pattern', 'level4Custom');
+            const level5Pattern = getPatternValue('level5Pattern', 'level5Custom');
 
             // 디버깅 로그
             console.log('변환 요청:', {
-                start_level: startLevel,
-                suffix: suffix,
-                exclude_levels: excludeLevels
+                output_level: outputLevel,
+                level1_pattern: level1Pattern,
+                level2_pattern: level2Pattern,
+                level3_pattern: level3Pattern,
+                level4_pattern: level4Pattern,
+                level5_pattern: level5Pattern,
+                suffix: suffix
             });
 
             if (!content.trim()) {
@@ -456,9 +1071,13 @@
                     },
                     body: JSON.stringify({
                         content: content,
-                        start_level: startLevel,
-                        suffix: suffix,
-                        exclude_levels: excludeLevels
+                        output_level: outputLevel,
+                        level1_pattern: level1Pattern,
+                        level2_pattern: level2Pattern,
+                        level3_pattern: level3Pattern,
+                        level4_pattern: level4Pattern,
+                        level5_pattern: level5Pattern,
+                        suffix: suffix
                     })
                 });
 
@@ -475,6 +1094,9 @@
                 alert('변환 중 오류가 발생했습니다: ' + error);
             }
         }
+
+        // 페이지 로드 시 초기화
+        document.addEventListener('DOMContentLoaded', setupPatternSelects);
 
         async function downloadFile() {
             const content = document.getElementById('outputText').value;
@@ -533,6 +1155,43 @@
             }).catch(function(err) {
                 alert('복사 중 오류가 발생했습니다: ' + err);
             });
+        }
+
+        function filterOutput() {
+            const outputText = document.getElementById('outputText').value;
+            if (!outputText.trim()) {
+                alert('필터링할 내용이 없습니다. 먼저 변환을 실행해주세요.');
+                return;
+            }
+
+            // 체크된 제외 레벨 수집
+            const excludeLevels = [];
+            for (let i = 1; i <= 6; i++) {
+                if (document.getElementById(`excludeLevel${i}`).checked) {
+                    excludeLevels.push(i);
+                }
+            }
+
+            if (excludeLevels.length === 0) {
+                alert('제외할 레벨을 선택해주세요.');
+                return;
+            }
+
+            // 라인별로 필터링
+            const lines = outputText.split('\n');
+            const filtered = lines.filter(line => {
+                // 마크다운 헤딩 레벨 감지 (줄 시작의 # 개수)
+                const match = line.trim().match(/^(#+)/);
+                if (match) {
+                    const level = match[1].length;
+                    return !excludeLevels.includes(level);
+                }
+                // 헤딩이 아닌 줄은 유지
+                return true;
+            });
+
+            document.getElementById('outputText').value = filtered.join('\n');
+            console.log(`[필터링 완료] 원본 ${lines.length}줄 → 필터링 후 ${filtered.length}줄`);
         }
 
         function clearAll() {

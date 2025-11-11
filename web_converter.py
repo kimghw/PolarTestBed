@@ -11,12 +11,17 @@ import os
 
 app = Flask(__name__)
 
-def convert_markdown_level(content, start_level=1, suffix='', exclude_levels=None):
+def convert_markdown_level(content, output_level=1, level1_pattern=r'^###\s+', level2_pattern=r'^\d+\.\d+\s+', level3_pattern=r'^\s*-\s+', level4_pattern='', level5_pattern='', suffix='', exclude_levels=None):
     """
-    마크다운 레벨 변환
+    마크다운 레벨 변환 (사용자 정의 패턴 지원, 최대 5레벨)
     Args:
         content: 마크다운 텍스트
-        start_level: 시작 레벨 (1=#, 2=##, 3=### 등)
+        output_level: 출력 시작 레벨 (1=#, 2=##, 3=### 등)
+        level1_pattern: 레벨 1로 인식할 정규식 패턴
+        level2_pattern: 레벨 2로 인식할 정규식 패턴
+        level3_pattern: 레벨 3로 인식할 정규식 패턴
+        level4_pattern: 레벨 4로 인식할 정규식 패턴
+        level5_pattern: 레벨 5로 인식할 정규식 패턴
         suffix: 마크 뒤에 추가할 공백이나 심볼 (예: ' ', '  ', ' ▶ ', ' >> ' 등)
         exclude_levels: 변환 결과에서 제외할 레벨 리스트 (예: ['level1', 'level2'])
     Returns:
@@ -27,93 +32,91 @@ def convert_markdown_level(content, start_level=1, suffix='', exclude_levels=Non
 
     lines = content.split('\n')
     result = []
+    line_types = []  # 각 라인이 어떤 소스 레벨에서 왔는지 추적
 
-    # 시작 레벨에 따른 # 개수
-    level1 = '#' * start_level
-    level2 = '#' * (start_level + 1)
-    level3 = '#' * (start_level + 2)
+    # 출력 레벨에 따른 # 개수
+    level1 = '#' * output_level
+    level2 = '#' * (output_level + 1)
+    level3 = '#' * (output_level + 2)
+    level4 = '#' * min(output_level + 3, 6)  # 최대 6개
+    level5 = '#' * min(output_level + 4, 6)  # 최대 6개
 
-    # 원본 형식별로 어떤 레벨로 변환될지 매핑
-    source_to_target_level = {}
+    # 패턴 컴파일 (빈 패턴 체크)
+    try:
+        pattern1 = re.compile(level1_pattern) if level1_pattern else None
+        pattern2 = re.compile(level2_pattern) if level2_pattern else None
+        pattern3 = re.compile(level3_pattern) if level3_pattern else None
+        pattern4 = re.compile(level4_pattern) if level4_pattern else None
+        pattern5 = re.compile(level5_pattern) if level5_pattern else None
+    except re.error as e:
+        raise ValueError(f"정규식 오류: {e}")
 
     for line in lines:
         # 빈 줄은 그대로 유지
         if line.strip() == '':
             result.append(line)
+            line_types.append(None)
             continue
 
         converted_line = None
         source_type = None
 
-        # ### 제목 → level1 제목 (번호 제거)
-        if line.startswith('###'):
-            text = line[3:].strip()
-            # "1. ", "2. " 등 앞의 번호 제거
-            text = re.sub(r'^\d+\.\s+', '', text)
+        # 레벨 1 패턴 매칭
+        if pattern1 and pattern1.match(line):
+            text = pattern1.sub('', line).strip()
+            # 숫자 번호 제거 (1., 2., A. 등)
+            text = re.sub(r'^[0-9A-Za-z]+[\.\)]\s*', '', text)
             converted_line = f'{level1}{suffix} {text}'
             source_type = 'level1'
 
-        # 1.1, 1.2, 2.1 등으로 시작하는 줄 → level2 (번호 제거)
-        elif re.match(r'^\d+\.\d+\s+', line):
-            text = re.sub(r'^\d+\.\d+\s+', '', line)
+        # 레벨 2 패턴 매칭
+        elif pattern2 and pattern2.match(line):
+            text = pattern2.sub('', line).strip()
+            # 숫자 번호 제거
+            text = re.sub(r'^[0-9A-Za-z]+[\.\)]\s*', '', text)
             converted_line = f'{level2}{suffix} {text}'
             source_type = 'level2'
 
-        # 앞에 공백이 있는 경우도 처리
-        elif re.match(r'^\s+\d+\.\d+\s+', line):
-            text = re.sub(r'^\s+\d+\.\d+\s+', '', line)
-            converted_line = f'{level2}{suffix} {text}'
-            source_type = 'level2'
-
-        # - 로 시작하는 줄 → level3
-        elif re.match(r'^\s*-\s+', line):
-            text = re.sub(r'^\s*-\s+', '', line)
+        # 레벨 3 패턴 매칭
+        elif pattern3 and pattern3.match(line):
+            text = pattern3.sub('', line).strip()
             converted_line = f'{level3}{suffix} {text}'
             source_type = 'level3'
+
+        # 레벨 4 패턴 매칭
+        elif pattern4 and pattern4.match(line):
+            text = pattern4.sub('', line).strip()
+            converted_line = f'{level4}{suffix} {text}'
+            source_type = 'level4'
+
+        # 레벨 5 패턴 매칭
+        elif pattern5 and pattern5.match(line):
+            text = pattern5.sub('', line).strip()
+            converted_line = f'{level5}{suffix} {text}'
+            source_type = 'level5'
 
         # 변환할 라인이 있으면 추가, 없으면 원본 그대로
         if converted_line is not None:
             result.append(converted_line)
-            if source_type:
-                source_to_target_level[source_type] = converted_line.split()[0]
+            line_types.append(source_type)
         else:
             result.append(line)
+            line_types.append(None)
 
-    # 변환 완료 후 제외 레벨 적용
+    # 변환 완료 후 제외 레벨 적용 (소스 레벨 기준)
     if exclude_levels:
-        # 제외할 마크다운 레벨 계산 (level1 -> #, level2 -> ##, level3 -> ###)
-        exclude_markdown_levels = []
-        for ex_level in exclude_levels:
-            if ex_level == 'level1':
-                exclude_markdown_levels.append(level1)
-            elif ex_level == 'level2':
-                exclude_markdown_levels.append(level2)
-            elif ex_level == 'level3':
-                exclude_markdown_levels.append(level3)
-            elif ex_level == 'level4':
-                exclude_markdown_levels.append('#' * (start_level + 3))
-            elif ex_level == 'level5':
-                exclude_markdown_levels.append('#' * (start_level + 4))
-            elif ex_level == 'level6':
-                exclude_markdown_levels.append('#' * (start_level + 5))
+        print(f"[제외 레벨] exclude_levels={exclude_levels}")
 
         # 제외 레벨에 해당하는 라인 필터링
         filtered_result = []
-        for line in result:
-            # 마크다운 헤딩인지 확인
-            if line.strip().startswith('#'):
-                # 헤딩 레벨 추출
-                heading_match = re.match(r'^(#+)', line.strip())
-                if heading_match:
-                    heading_level = heading_match.group(1)
-                    # 제외 레벨에 포함되지 않으면 추가
-                    if heading_level not in exclude_markdown_levels:
-                        filtered_result.append(line)
-                else:
-                    filtered_result.append(line)
-            else:
+        for i, (line, source_type) in enumerate(zip(result, line_types)):
+            # 소스 타입이 제외 레벨에 포함되지 않으면 추가
+            if source_type not in exclude_levels:
                 filtered_result.append(line)
+            else:
+                print(f"[제외됨] {line[:50]}... (소스: {source_type})")
 
+        print(f"[필터링 완료] 원본 {len(result)}줄 → 필터링 후 {len(filtered_result)}줄")
         return '\n'.join(filtered_result)
 
     return '\n'.join(result)
@@ -127,31 +130,52 @@ def convert():
     try:
         data = request.get_json()
         content = data.get('content', '')
-        start_level = int(data.get('start_level', 1))
+        output_level = int(data.get('output_level', 1))
+        level1_pattern = data.get('level1_pattern', r'^###\s+')
+        level2_pattern = data.get('level2_pattern', r'^\d+\.\d+\s+')
+        level3_pattern = data.get('level3_pattern', r'^\s*-\s+')
+        level4_pattern = data.get('level4_pattern', '')
+        level5_pattern = data.get('level5_pattern', '')
         suffix = data.get('suffix', '')
-        exclude_levels = data.get('exclude_levels', [])
 
         # 디버깅 로그
-        print(f"[변환 요청] start_level={start_level}, suffix='{suffix}', exclude_levels={exclude_levels}")
+        print(f"[변환 요청] output_level={output_level}, suffix='{suffix}'")
+        print(f"  level1_pattern='{level1_pattern}'")
+        print(f"  level2_pattern='{level2_pattern}'")
+        print(f"  level3_pattern='{level3_pattern}'")
+        print(f"  level4_pattern='{level4_pattern}'")
+        print(f"  level5_pattern='{level5_pattern}'")
 
         if not content:
             return jsonify({'error': '내용을 입력해주세요.'}), 400
 
-        if start_level < 1 or start_level > 6:
-            return jsonify({'error': '시작 레벨은 1-6 사이여야 합니다.'}), 400
+        if output_level < 1 or output_level > 6:
+            return jsonify({'error': '출력 레벨은 1-6 사이여야 합니다.'}), 400
 
-        result = convert_markdown_level(content, start_level, suffix, exclude_levels)
+        result = convert_markdown_level(
+            content,
+            output_level,
+            level1_pattern,
+            level2_pattern,
+            level3_pattern,
+            level4_pattern,
+            level5_pattern,
+            suffix,
+            None  # exclude_levels는 더이상 사용하지 않음
+        )
 
         print(f"[변환 완료] 결과 라인 수: {len(result.split(chr(10)))}")
 
         return jsonify({
             'success': True,
             'result': result,
-            'start_level': start_level,
-            'suffix': suffix,
-            'exclude_levels': exclude_levels
+            'output_level': output_level,
+            'suffix': suffix
         })
 
+    except ValueError as e:
+        print(f"[변환 오류] {str(e)}")
+        return jsonify({'error': str(e)}), 400
     except Exception as e:
         print(f"[변환 오류] {str(e)}")
         return jsonify({'error': str(e)}), 500
