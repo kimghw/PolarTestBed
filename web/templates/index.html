@@ -719,6 +719,7 @@
                             <li><code>\d</code> - 숫자 (0-9)</li>
                             <li><code>\d+</code> - 하나 이상의 숫자</li>
                             <li><code>\.</code> - 실제 마침표 (이스케이프)</li>
+                            <li><code>\*</code> - 실제 별표 (이스케이프) → <code>\*\*</code> = 별표 두 개</li>
                             <li><code>[A-Z]</code> - 대문자 알파벳</li>
                             <li><code>[a-z]</code> - 소문자 알파벳</li>
                             <li><code>[가-힣]</code> - 한글</li>
@@ -748,6 +749,18 @@
                             <tr style="border-bottom: 1px solid #b8daff;">
                                 <td style="padding: 8px;"><code>^\s*-\s+</code></td>
                                 <td style="padding: 8px;"><code>- 항목</code>, <code>    - 항목</code></td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #b8daff;">
+                                <td style="padding: 8px;"><code>^\*\*\s*</code></td>
+                                <td style="padding: 8px;"><code>** 제목</code>, <code>**제목</code></td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #b8daff;">
+                                <td style="padding: 8px;"><code>^제\d+장\s+</code></td>
+                                <td style="padding: 8px;"><code>제1장 서론</code>, <code>제2장 본론</code></td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #b8daff;">
+                                <td style="padding: 8px;"><code>^제\d+절\s+</code></td>
+                                <td style="padding: 8px;"><code>제1절 개요</code>, <code>제2절 방법</code></td>
                             </tr>
                             <tr style="border-bottom: 1px solid #b8daff;">
                                 <td style="padding: 8px;"><code>^[A-Z]\.\s+</code></td>
