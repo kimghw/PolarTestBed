@@ -792,7 +792,10 @@
                 <div class="editor-panel">
                     <h3>
                         <span>입력 (원본)</span>
-                        <button class="btn btn-trim" onclick="trimLeadingSpaces()" style="padding: 8px 15px; font-size: 14px;">✂️ 공백 제거</button>
+                        <div style="display: flex; gap: 10px;">
+                            <button class="btn btn-trim" onclick="trimLeadingSpaces()" style="padding: 8px 15px; font-size: 14px;">✂️ 공백 제거</button>
+                            <button class="btn btn-trim" onclick="removeCustomChars()" style="padding: 8px 15px; font-size: 14px;">🗑️ 문자 삭제</button>
+                        </div>
                     </h3>
                     <textarea id="inputText" placeholder="변환할 마크다운 텍스트를 입력하세요...
 
@@ -942,6 +945,40 @@
 
             inputText.value = result;
             console.log('[공백 제거 완료] 각 라인의 앞부분 공백 제거됨');
+        }
+
+        function removeCustomChars() {
+            const inputText = document.getElementById('inputText');
+            const content = inputText.value;
+
+            if (!content.trim()) {
+                alert('내용이 없습니다.');
+                return;
+            }
+
+            // 사용자에게 삭제할 문자 입력 받기
+            const charsToRemove = prompt('삭제할 문자를 입력하세요 (여러 문자 입력 가능):\n예: ()괄호, [], 쉼표, 등', '');
+
+            if (charsToRemove === null) {
+                // 취소 버튼 클릭
+                return;
+            }
+
+            if (charsToRemove === '') {
+                alert('삭제할 문자를 입력해주세요.');
+                return;
+            }
+
+            // 특수문자 이스케이프 처리
+            const escapedChars = charsToRemove.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            const regex = new RegExp(`[${escapedChars}]`, 'g');
+
+            // 문자 삭제
+            const result = content.replace(regex, '');
+
+            inputText.value = result;
+            console.log(`[문자 삭제 완료] 삭제된 문자: "${charsToRemove}"`);
+            alert(`삭제 완료!\n삭제된 문자: "${charsToRemove}"`);
         }
 
         function loadFile(input) {
