@@ -484,6 +484,11 @@
                             </div>
 
                             <div style="display: flex; gap: 15px; align-items: center;">
+                                <label for="removeChars" style="min-width: 90px; font-weight: 600;">특수문자 제거:</label>
+                                <input type="text" id="removeChars" placeholder="예: ()[]{}·/" title="변환 후 제목에서 제거할 특수문자" style="flex: 1; padding: 8px 12px; border: 2px solid #ddd; border-radius: 5px; font-family: 'Consolas', 'Monaco', monospace;">
+                            </div>
+
+                            <div style="display: flex; gap: 15px; align-items: center;">
                                 <label style="min-width: 100px; font-weight: 600;">제외 레벨:</label>
                                 <div class="exclude-levels" style="flex: 1;">
                                     <label title="레벨 1 제외">
@@ -1052,6 +1057,7 @@
             const content = document.getElementById('inputText').value;
             const outputLevel = parseInt(document.getElementById('outputLevel').value);
             const suffix = document.getElementById('suffix').value;
+            const removeChars = document.getElementById('removeChars').value;
 
             // 패턴 수집
             const level1Pattern = getPatternValue('level1Pattern', 'level1Custom');
@@ -1068,7 +1074,8 @@
                 level3_pattern: level3Pattern,
                 level4_pattern: level4Pattern,
                 level5_pattern: level5Pattern,
-                suffix: suffix
+                suffix: suffix,
+                remove_chars: removeChars
             });
 
             if (!content.trim()) {
@@ -1090,7 +1097,8 @@
                         level3_pattern: level3Pattern,
                         level4_pattern: level4Pattern,
                         level5_pattern: level5Pattern,
-                        suffix: suffix
+                        suffix: suffix,
+                        remove_chars: removeChars
                     })
                 });
 
@@ -1214,6 +1222,7 @@
                 document.getElementById('fileName').textContent = '';
                 document.getElementById('fileInput').value = '';
                 document.getElementById('suffix').value = '';
+                document.getElementById('removeChars').value = '';
                 document.getElementById('excludeLevel1').checked = false;
                 document.getElementById('excludeLevel2').checked = false;
                 document.getElementById('excludeLevel3').checked = false;

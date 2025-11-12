@@ -11,7 +11,7 @@ import os
 
 app = Flask(__name__)
 
-def convert_markdown_level(content, output_level=1, level1_pattern=r'^###\s+', level2_pattern=r'^\d+\.\d+\s+', level3_pattern=r'^\s*-\s+', level4_pattern='', level5_pattern='', suffix='', exclude_levels=None):
+def convert_markdown_level(content, output_level=1, level1_pattern=r'^###\s+', level2_pattern=r'^\d+\.\d+\s+', level3_pattern=r'^\s*-\s+', level4_pattern='', level5_pattern='', suffix='', exclude_levels=None, remove_chars=''):
     """
     마크다운 레벨 변환 (사용자 정의 패턴 지원, 최대 5레벨)
     Args:
@@ -24,6 +24,7 @@ def convert_markdown_level(content, output_level=1, level1_pattern=r'^###\s+', l
         level5_pattern: 레벨 5로 인식할 정규식 패턴
         suffix: 마크 뒤에 추가할 공백이나 심볼 (예: ' ', '  ', ' ▶ ', ' >> ' 등)
         exclude_levels: 변환 결과에서 제외할 레벨 리스트 (예: ['level1', 'level2'])
+        remove_chars: 변환 후 제거할 특수문자 문자열 (예: '()[]{}' - 괄호 제거)
     Returns:
         변환된 마크다운 텍스트
     """
@@ -117,6 +118,34 @@ def convert_markdown_level(content, output_level=1, level1_pattern=r'^###\s+', l
                 print(f"[제외됨] {line[:50]}... (소스: {source_type})")
 
         print(f"[필터링 완료] 원본 {len(result)}줄 → 필터링 후 {len(filtered_result)}줄")
+        result = filtered_result
+
+    # 특수문자 제거 필터링 (변환 완료 후)
+    if remove_chars:
+        print(f"[특수문자 제거] remove_chars='{remove_chars}'")
+        filtered_result = []
+        for line in result:
+            # 헤딩 라인인지 확인 (# 로 시작)
+            if line.strip().startswith('#'):
+                # # 부분과 텍스트 부분 분리
+                heading_match = re.match(r'^(#+\s*)', line)
+                if heading_match:
+                    heading_part = heading_match.group(1)
+                    text_part = line[len(heading_part):]
+
+                    # 텍스트 부분에서 지정된 문자 제거
+                    for char in remove_chars:
+                        text_part = text_part.replace(char, '')
+
+                    filtered_line = heading_part + text_part
+                    print(f"  '{line.strip()[:50]}...' → '{filtered_line.strip()[:50]}...'")
+                    filtered_result.append(filtered_line)
+                else:
+                    filtered_result.append(line)
+            else:
+                filtered_result.append(line)
+
+        print(f"[특수문자 제거 완료]")
         return '\n'.join(filtered_result)
 
     return '\n'.join(result)
@@ -137,9 +166,10 @@ def convert():
         level4_pattern = data.get('level4_pattern', '')
         level5_pattern = data.get('level5_pattern', '')
         suffix = data.get('suffix', '')
+        remove_chars = data.get('remove_chars', '')
 
         # 디버깅 로그
-        print(f"[변환 요청] output_level={output_level}, suffix='{suffix}'")
+        print(f"[변환 요청] output_level={output_level}, suffix='{suffix}', remove_chars='{remove_chars}'")
         print(f"  level1_pattern='{level1_pattern}'")
         print(f"  level2_pattern='{level2_pattern}'")
         print(f"  level3_pattern='{level3_pattern}'")
@@ -161,7 +191,8 @@ def convert():
             level4_pattern,
             level5_pattern,
             suffix,
-            None  # exclude_levels는 더이상 사용하지 않음
+            None,  # exclude_levels는 더이상 사용하지 않음
+            remove_chars
         )
 
         print(f"[변환 완료] 결과 라인 수: {len(result.split(chr(10)))}")
@@ -170,7 +201,8 @@ def convert():
             'success': True,
             'result': result,
             'output_level': output_level,
-            'suffix': suffix
+            'suffix': suffix,
+            'remove_chars': remove_chars
         })
 
     except ValueError as e:
