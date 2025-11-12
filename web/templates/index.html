@@ -792,9 +792,18 @@
                 <div class="editor-panel">
                     <h3>
                         <span>입력 (원본)</span>
-                        <div style="display: flex; gap: 10px;">
-                            <button class="btn btn-trim" onclick="trimLeadingSpaces()" style="padding: 8px 15px; font-size: 14px;">✂️ 공백 제거</button>
-                            <button class="btn btn-trim" onclick="removeCustomChars()" style="padding: 8px 15px; font-size: 14px;">🗑️ 문자 삭제</button>
+                        <div style="display: flex; flex-direction: column; gap: 8px;">
+                            <div style="display: flex; gap: 10px; align-items: center;">
+                                <input type="text" id="customCharsInput" placeholder="삭제할 문자 입력" title="삭제할 문자를 입력하세요 (예: ()[])" style="padding: 8px 12px; border: 2px solid #ddd; border-radius: 5px; font-family: 'Consolas', 'Monaco', monospace; width: 150px;">
+                                <button class="btn btn-trim" onclick="removeCustomChars()" style="padding: 8px 15px; font-size: 14px;">🗑️ 문자 삭제</button>
+                                <button class="btn btn-trim" onclick="trimLeadingSpaces()" style="padding: 8px 15px; font-size: 14px;">✂️ 공백 제거</button>
+                            </div>
+                            <div style="display: flex; gap: 10px; align-items: center;">
+                                <input type="text" id="replaceFromInput" placeholder="찾을 문자" title="교체할 문자를 입력하세요" style="padding: 8px 12px; border: 2px solid #ddd; border-radius: 5px; font-family: 'Consolas', 'Monaco', monospace; width: 120px;">
+                                <span style="color: #667eea; font-weight: bold;">→</span>
+                                <input type="text" id="replaceToInput" placeholder="바꿀 문자" title="교체될 문자를 입력하세요" style="padding: 8px 12px; border: 2px solid #ddd; border-radius: 5px; font-family: 'Consolas', 'Monaco', monospace; width: 120px;">
+                                <button class="btn btn-trim" onclick="replaceCustomChars()" style="padding: 8px 15px; font-size: 14px;">🔄 문자 교체</button>
+                            </div>
                         </div>
                     </h3>
                     <textarea id="inputText" placeholder="변환할 마크다운 텍스트를 입력하세요...
@@ -949,23 +958,18 @@
 
         function removeCustomChars() {
             const inputText = document.getElementById('inputText');
+            const customCharsInput = document.getElementById('customCharsInput');
             const content = inputText.value;
+            const charsToRemove = customCharsInput.value;
 
             if (!content.trim()) {
                 alert('내용이 없습니다.');
                 return;
             }
 
-            // 사용자에게 삭제할 문자 입력 받기
-            const charsToRemove = prompt('삭제할 문자를 입력하세요 (여러 문자 입력 가능):\n예: ()괄호, [], 쉼표, 등', '');
-
-            if (charsToRemove === null) {
-                // 취소 버튼 클릭
-                return;
-            }
-
             if (charsToRemove === '') {
                 alert('삭제할 문자를 입력해주세요.');
+                customCharsInput.focus();
                 return;
             }
 
@@ -979,6 +983,41 @@
             inputText.value = result;
             console.log(`[문자 삭제 완료] 삭제된 문자: "${charsToRemove}"`);
             alert(`삭제 완료!\n삭제된 문자: "${charsToRemove}"`);
+        }
+
+        function replaceCustomChars() {
+            const inputText = document.getElementById('inputText');
+            const replaceFromInput = document.getElementById('replaceFromInput');
+            const replaceToInput = document.getElementById('replaceToInput');
+            const content = inputText.value;
+            const fromChars = replaceFromInput.value;
+            const toChars = replaceToInput.value;
+
+            if (!content.trim()) {
+                alert('내용이 없습니다.');
+                return;
+            }
+
+            if (fromChars === '') {
+                alert('찾을 문자를 입력해주세요.');
+                replaceFromInput.focus();
+                return;
+            }
+
+            // 특수문자 이스케이프 처리
+            const escapedChars = fromChars.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            const regex = new RegExp(escapedChars, 'g');
+
+            // 문자 교체
+            const result = content.replace(regex, toChars);
+
+            // 교체된 개수 계산
+            const matches = content.match(regex);
+            const count = matches ? matches.length : 0;
+
+            inputText.value = result;
+            console.log(`[문자 교체 완료] "${fromChars}" → "${toChars}" (${count}개 교체됨)`);
+            alert(`교체 완료!\n"${fromChars}" → "${toChars}"\n${count}개 교체됨`);
         }
 
         function loadFile(input) {
